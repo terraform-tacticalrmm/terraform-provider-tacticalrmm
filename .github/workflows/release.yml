@@ -39,15 +39,6 @@ jobs:
       - name: Release
         id: release
         uses: cycjimmy/semantic-release-action@v4
-        with:
-          extra_plugins: |
-            "@semantic-release/changelog@6.0.2"
-            "@semantic-release/commit-analyzer@9.0.2"
-            "@semantic-release/exec@6.0.3"
-            "@semantic-release/git@10.0.1"
-            "@semantic-release/github@8.0.7"
-            "@semantic-release/release-notes-generator@10.0.3"
-            "conventional-changelog-conventionalcommits@8.0.0"
         env:
           GITHUB_TOKEN: ${{ secrets.TACTICALRMM_ACTIONS }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
