@@ -1,15 +1,15 @@
 version: 2
-project_name: terraform-provider-trmm
+project_name: terraform-provider-tacticalrmm
 # .goreleaser.yml
 
 release:
   # In case you want to skip publishing to GitHub, you can set this to true
   github:
     owner: terraform-tacticalrmm
-    name: terraform-provider-trmm
+    name: terraform-provider-tacticalrmm
 
 builds:
-  - id: terraform-provider-trmm
+  - id: terraform-provider-tacticalrmm
     goos:
       - linux
       - darwin
@@ -23,7 +23,7 @@ builds:
     binary: '{{ .ProjectName }}_v{{ .Version }}'
 
 archives:
-  - id: terraform-provider-trmm
+  - id: terraform-provider-tacticalrmm
     format: zip
     name_template: '{{ .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}'
 
