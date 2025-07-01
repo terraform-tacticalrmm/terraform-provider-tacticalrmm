@@ -1,5 +1,5 @@
 {
-  "name": "terraform-provider-trmm",
-  "version": "1.1.1",
+  "name": "terraform-provider-tacticalrmm",
+  "version": "1.1.4",
   "private": true
 }

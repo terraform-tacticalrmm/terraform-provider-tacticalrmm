@@ -1,7 +1,7 @@
 # project specific
 .local/
 test/
-terraform-provider-trmm
+terraform-provider-tacticalrmm
 
 
 # Local .terraform directories
