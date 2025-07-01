@@ -1,6 +1,6 @@
 version: 2
-# .goreleaser.yml
 project_name: terraform-provider-trmm
+# .goreleaser.yml
 
 release:
   # In case you want to skip publishing to GitHub, you can set this to true
