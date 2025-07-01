@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/compare/v1.1.0...v1.1.1) (2025-07-01)
+
+
+### Bug Fixes
+
+* correct release asset naming in .goreleaser.yml ([1fd4010](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/commit/1fd4010cf83e5a9206adb371bc64a73786169e03))
+
 # [1.1.0](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/compare/v1.0.1...v1.1.0) (2025-07-01)
 
 
