@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/compare/v1.1.5...v1.2.0) (2025-07-01)
+
+
+### Features
+
+* Add include_script_body to scripts data source and enhance build script ([3b4cf4d](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/commit/3b4cf4dbd02e213d873f9ed0add97ef61816c9e7))
+
 ## [1.1.5](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/compare/v1.1.4...v1.1.5) (2025-07-01)
 
 
