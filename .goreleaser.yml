@@ -1,0 +1,36 @@
+# .goreleaser.yml
+project_name: terraform-provider-trmm
+
+release:
+  # In case you want to skip publishing to GitHub, you can set this to true
+  github:
+    owner: terraform-tacticalrmm
+    name: terraform-provider-trmm
+
+builds:
+  - id: terraform-provider-trmm
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    main: ./
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}}
+    binary: '{{ .ProjectName }}_v{{ .Version }}'
+
+archives:
+  - id: terraform-provider-trmm
+    format: zip
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+
+checksum:
+  name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
+  algorithm: sha256
+
+sign:
+  artifacts: checksum
+  args: ["--batch", "--local-user", "{{ .Env.GPG_FINGERPRINT }}", "--output", "${signature}", "--detach-sign", "${artifact}"]
+
