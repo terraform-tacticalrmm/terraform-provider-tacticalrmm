@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/compare/v1.1.4...v1.1.5) (2025-07-01)
+
+
+### Bug Fixes
+
+* force new release after workflow fixes ([dadf03d](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/commit/dadf03d8352a57e4741d98197c839b449aa935c8))
+
 ## [1.1.4](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/compare/v1.1.3...v1.1.4) (2025-07-01)
 
 
