@@ -1,6 +1,6 @@
 module github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm
 
-go 1.24
+go 1.21
 
 require github.com/hashicorp/terraform-plugin-framework v1.15.0
 

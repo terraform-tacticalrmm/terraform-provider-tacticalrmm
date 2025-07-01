@@ -26,17 +26,18 @@ type ScriptsDataSource struct {
 
 // ScriptsDataSourceModel describes the data source data model.
 type ScriptsDataSourceModel struct {
-    Id         types.Int64  `tfsdk:"id"`
-    Name       types.String `tfsdk:"name"`
-    ScriptType types.String `tfsdk:"script_type"`
-    Shell      types.String `tfsdk:"shell"`
-    Category   types.String `tfsdk:"category"`
-    Hidden     types.Bool   `tfsdk:"hidden"`
-    Scripts    types.List   `tfsdk:"scripts"`
+    Id                 types.Int64  `tfsdk:"id"`
+    Name               types.String `tfsdk:"name"`
+    ScriptType         types.String `tfsdk:"script_type"`
+    Shell              types.String `tfsdk:"shell"`
+    Category           types.String `tfsdk:"category"`
+    Hidden             types.Bool   `tfsdk:"hidden"`
+    IncludeScriptBody  types.Bool   `tfsdk:"include_script_body"`
+    Scripts            types.List   `tfsdk:"scripts"`
 }
 
 // ScriptModel represents a single script in the list
-// Note: List endpoint uses ScriptTableSerializer which excludes script_body
+// Enhanced to include script_body when requested
 type ScriptModel struct {
     Id                   types.Int64  `tfsdk:"id"`
     Name                 types.String `tfsdk:"name"`
@@ -45,6 +46,7 @@ type ScriptModel struct {
     ScriptType           types.String `tfsdk:"script_type"`
     Category             types.String `tfsdk:"category"`
     Filename             types.String `tfsdk:"filename"`
+    ScriptBody           types.String `tfsdk:"script_body"`
     DefaultTimeout       types.Int64  `tfsdk:"default_timeout"`
     Favorite             types.Bool   `tfsdk:"favorite"`
     Hidden               types.Bool   `tfsdk:"hidden"`
@@ -61,7 +63,7 @@ func (d *ScriptsDataSource) Metadata(ctx context.Context, req datasource.Metadat
 
 func (d *ScriptsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
     resp.Schema = schema.Schema{
-        MarkdownDescription: "Scripts data source for Tactical RMM. Use this to fetch all scripts or filter by ID or name. Note: The list endpoint does not return script_body field.",
+        MarkdownDescription: "Scripts data source for Tactical RMM. Use this to fetch all scripts or filter by ID or name. The list endpoint does not return script_body field by default; set include_script_body to true to fetch full script content (requires additional API calls).",
 
         Attributes: map[string]schema.Attribute{
             "id": schema.Int64Attribute{
@@ -86,6 +88,10 @@ func (d *ScriptsDataSource) Schema(ctx context.Context, req datasource.SchemaReq
             },
             "hidden": schema.BoolAttribute{
                 MarkdownDescription: "Optional: Filter scripts by hidden status.",
+                Optional:            true,
+            },
+            "include_script_body": schema.BoolAttribute{
+                MarkdownDescription: "When true, fetches the full script body for each script. This requires additional API calls per script.",
                 Optional:            true,
             },
             "scripts": schema.ListNestedAttribute{
@@ -119,6 +125,10 @@ func (d *ScriptsDataSource) Schema(ctx context.Context, req datasource.SchemaReq
                         },
                         "filename": schema.StringAttribute{
                             MarkdownDescription: "Script filename (for builtin scripts)",
+                            Computed:            true,
+                        },
+                        "script_body": schema.StringAttribute{
+                            MarkdownDescription: "Script content (only populated when include_script_body is true)",
                             Computed:            true,
                         },
                         "default_timeout": schema.Int64Attribute{
@@ -272,6 +282,9 @@ func (d *ScriptsDataSource) Read(ctx context.Context, req datasource.ReadRequest
         }
     }
 
+    // Determine if we need to fetch script bodies
+    includeScriptBody := !data.IncludeScriptBody.IsNull() && data.IncludeScriptBody.ValueBool()
+
     // Convert to ScriptModel list
     scriptsList := make([]ScriptModel, len(filteredScripts))
     for i, script := range filteredScripts {
@@ -359,6 +372,28 @@ func (d *ScriptsDataSource) Read(ctx context.Context, req datasource.ReadRequest
             model.SupportedPlatforms = types.ListNull(types.StringType)
         }
         
+        // Fetch script body if requested
+        if includeScriptBody && !model.Id.IsNull() {
+            scriptDetail, err := d.fetchScriptDetail(model.Id.ValueInt64())
+            if err != nil {
+                // Log warning but continue - don't fail the entire operation
+                resp.Diagnostics.AddWarning(
+                    "Script Detail Fetch Warning",
+                    fmt.Sprintf("Unable to fetch script body for script ID %d: %s", model.Id.ValueInt64(), err),
+                )
+                model.ScriptBody = types.StringNull()
+            } else {
+                if scriptBody, ok := scriptDetail["script_body"].(string); ok {
+                    model.ScriptBody = types.StringValue(scriptBody)
+                } else {
+                    model.ScriptBody = types.StringNull()
+                }
+            }
+        } else {
+            // Explicitly set to null when not requested
+            model.ScriptBody = types.StringNull()
+        }
+        
         scriptsList[i] = model
     }
 
@@ -372,6 +407,7 @@ func (d *ScriptsDataSource) Read(ctx context.Context, req datasource.ReadRequest
             "script_type":          types.StringType,
             "category":             types.StringType,
             "filename":             types.StringType,
+            "script_body":          types.StringType,
             "default_timeout":      types.Int64Type,
             "favorite":             types.BoolType,
             "hidden":               types.BoolType,
@@ -395,4 +431,29 @@ func (d *ScriptsDataSource) Read(ctx context.Context, req datasource.ReadRequest
     data.Scripts = listValue
 
     resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+}
+
+// fetchScriptDetail retrieves the full script details including script_body
+func (d *ScriptsDataSource) fetchScriptDetail(scriptId int64) (map[string]interface{}, error) {
+    httpReq, err := http.NewRequest("GET", fmt.Sprintf("%s/scripts/%d/", d.client.BaseURL, scriptId), nil)
+    if err != nil {
+        return nil, fmt.Errorf("unable to create request: %w", err)
+    }
+
+    httpResp, err := d.client.Do(httpReq)
+    if err != nil {
+        return nil, fmt.Errorf("unable to fetch script detail: %w", err)
+    }
+    defer httpResp.Body.Close()
+
+    if httpResp.StatusCode != http.StatusOK {
+        return nil, fmt.Errorf("unexpected status code: %d", httpResp.StatusCode)
+    }
+
+    var result map[string]interface{}
+    if err := json.NewDecoder(httpResp.Body).Decode(&result); err != nil {
+        return nil, fmt.Errorf("unable to parse response: %w", err)
+    }
+
+    return result, nil
 }
