@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/compare/v1.1.1...v1.1.2) (2025-07-01)
+
+
+### Bug Fixes
+
+* **release:** align go versions in release workflow and go.mod ([c78a735](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/commit/c78a7357e45eaa34cf3e23af87074d259b26a686))
+
 ## [1.1.1](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/compare/v1.1.0...v1.1.1) (2025-07-01)
 
 
