@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/compare/v1.2.0...v1.2.1) (2025-07-01)
+
+
+### Bug Fixes
+
+* Update go.mod after go mod tidy ([6d0f3b1](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/commit/6d0f3b146c50d9f4719a0f0a560b902ac57a7da1))
+
 # [1.2.0](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/compare/v1.1.5...v1.2.0) (2025-07-01)
 
 
