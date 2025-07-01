@@ -1,3 +1,11 @@
+## [1.1.4](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/compare/v1.1.3...v1.1.4) (2025-07-01)
+
+
+### Bug Fixes
+
+* **goreleaser:** adjust project_name placement in config ([9ca5534](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/commit/9ca5534451bdfce05a6aa0817a5f74219a68ec51))
+* **goreleaser:** use plural signs for configuration ([85b5a53](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/commit/85b5a5327f5541a0846849ed08543c1ee7bf969a))
+
 ## [1.1.3](https://github.com/terraform-tacticalrmm/terraform-provider-tacticalrmm/compare/v1.1.2...v1.1.3) (2025-07-01)
 
 
